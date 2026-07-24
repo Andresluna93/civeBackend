@@ -10,9 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      process.env.FRONTEND_URL,
-    ].filter(Boolean),
+    origin: [process.env.FRONTEND_URL].filter(Boolean),
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
@@ -20,7 +18,9 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(morgan("dev"));
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+}
 
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/chats", chatRoutes);
