@@ -11,9 +11,8 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "https://anthropopathic-chillingly-serafina.ngrok-free.dev",
-    ],
+      process.env.FRONTEND_URL,
+    ].filter(Boolean),
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
