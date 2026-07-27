@@ -1,5 +1,11 @@
 import chat from "../models/chat.model.js";
 
+const generarTicket = (id) => {
+  const fecha = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const sufijo = id.toString().slice(-6).toUpperCase();
+  return `${fecha}-${sufijo}`;
+};
+
 const esDentroHorario = () => {
   const hora = parseInt(
     new Intl.DateTimeFormat("es-EC", {
@@ -67,6 +73,14 @@ export const createChat = async (req, res) => {
           $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
         },
         { new: true, upsert: true },
+      );
+    }
+
+    if (newChat && !newChat.ticket) {
+      newChat = await chat.findByIdAndUpdate(
+        newChat._id,
+        { ticket: generarTicket(newChat._id) },
+        { new: true },
       );
     }
 
@@ -278,12 +292,27 @@ export const sweepAbandonedChatsAgain = async (req, res) => {
 };
 
 export const updateChatHistorial = async (req, res) => {
-  const { id, texto, tipo, enviadoPor, requeriment, estado, status, servicio, sucursal } = req.body;
+  const {
+    id,
+    texto,
+    tipo,
+    enviadoPor,
+    requeriment,
+    estado,
+    status,
+    servicio,
+    sucursal,
+  } = req.body;
   try {
     const mensaje = { texto, tipo, enviadoPor, fecha: new Date() };
 
     const pushFields = { historial: mensaje };
-    if (status) pushFields.statusH = { v: status.v, date: status.date, hora: status.hora };
+    if (status)
+      pushFields.statusH = {
+        v: status.v,
+        date: status.date,
+        hora: status.hora,
+      };
 
     const updatedChat = await chat.findByIdAndUpdate(
       id,
@@ -295,7 +324,7 @@ export const updateChatHistorial = async (req, res) => {
           ...(requeriment !== undefined && { requeriment }),
           ...(status !== undefined && { status }),
           ...(sucursal !== undefined && { sucursal }),
-          servicio
+          servicio,
         },
         $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
       },
@@ -393,7 +422,7 @@ export const updateChat = async (req, res) => {
 };
 
 export const updateStatusChat = async (req, res) => {
-  const { estado, requeriment, id, status } = req.body;
+  const { estado, requeriment, id, status, observacion } = req.body;
   const statusObj = { v: status.v, date: status.date, hora: status.hora };
   try {
     const updateStatus = await chat.findByIdAndUpdate(
@@ -402,9 +431,10 @@ export const updateStatusChat = async (req, res) => {
         $set: {
           estado,
           requeriment,
+          observacion,
           status,
         },
-        $push: {statusH: statusObj}
+        $push: { statusH: statusObj },
       },
       { new: true },
     );
@@ -420,4 +450,4 @@ export const updateStatusChat = async (req, res) => {
       data: error,
     });
   }
-}
+};

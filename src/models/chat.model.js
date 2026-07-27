@@ -36,7 +36,9 @@ const chatSchema = new mongoose.Schema(
     second_recordatorio: { type: Boolean, default: false },
     ultimoMensaje: { type: mensajeSchema, default: null },
     noLeidos: { type: Number, default: 0 },
-    requeriment: {type: String, default:null},
+    ticket: { type: String, default: null, unique: true, sparse: true },
+    requeriment: { type: String, default: null },
+    observacion: { type: String, default: null },
     status: {
       v: { type: String, default: null },
       date: { type: Date, default: null },
