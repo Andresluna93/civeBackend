@@ -30,6 +30,7 @@ export const createChat = async (req, res) => {
     status,
     estado,
     canal,
+    cedula
   } = req.body;
   try {
     const mensaje = { texto, tipo, enviadoPor, fecha: new Date() };
@@ -50,6 +51,7 @@ export const createChat = async (req, res) => {
             sucursal,
             status,
             canal,
+            cedula
           },
           $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
         },
@@ -72,6 +74,7 @@ export const createChat = async (req, res) => {
             estado: "abandono",
             fecha_fin: new Date(),
             canal,
+            cedula
           },
           $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
         },
