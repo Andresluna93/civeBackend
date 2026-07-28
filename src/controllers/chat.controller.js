@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import chat from "../models/chat.model.js";
 
 const generarTicket = (id) => {
