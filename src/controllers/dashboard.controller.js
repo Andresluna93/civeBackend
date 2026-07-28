@@ -241,7 +241,12 @@ export const getChatsByEstado = async (req, res) => {
       { $group: { _id: "$estado", total: { $sum: 1 } } },
     ]);
 
-    const categorias = { en_proceso: 0, finalizado: 0, abandono: 0 };
+    const categorias = {
+      ingresado: 0,
+      en_proceso: 0,
+      finalizado: 0,
+      abandono: 0,
+    };
     resultado.forEach((r) => {
       if (r._id in categorias) categorias[r._id] = r.total;
     });
