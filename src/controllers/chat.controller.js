@@ -30,19 +30,21 @@ export const createChat = async (req, res) => {
     status,
     estado,
     canal,
-    cedula
+    cedula,
   } = req.body;
   try {
     const mensaje = { texto, tipo, enviadoPor, fecha: new Date() };
     const statusArray = { v: status.v, date: status.date, hora: status.hora };
     const dentroHorario = esDentroHorario();
+    const newId = new mongoose.Types.ObjectId();
+    const ticket = generarTicket(newId);
     let newChat;
 
     if (dentroHorario) {
       newChat = await chat.findOneAndUpdate(
         { wa_id, estado: estado },
         {
-          $setOnInsert: { name, horario_laboral: true },
+          $setOnInsert: { _id: newId, name, horario_laboral: true, ticket },
           $push: { historial: mensaje, statusH: statusArray },
           $set: {
             ultimoMensaje: mensaje,
@@ -51,7 +53,7 @@ export const createChat = async (req, res) => {
             sucursal,
             status,
             canal,
-            cedula
+            cedula,
           },
           $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
         },
@@ -62,9 +64,11 @@ export const createChat = async (req, res) => {
         { wa_id, estado: estado },
         {
           $setOnInsert: {
+            _id: newId,
             name,
             horario_laboral: false,
             first_recordatorio: false,
+            ticket,
           },
           $push: { historial: mensaje },
           $set: {
@@ -74,19 +78,11 @@ export const createChat = async (req, res) => {
             estado: "abandono",
             fecha_fin: new Date(),
             canal,
-            cedula
+            cedula,
           },
           $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
         },
         { new: true, upsert: true },
-      );
-    }
-
-    if (newChat && !newChat.ticket) {
-      newChat = await chat.findByIdAndUpdate(
-        newChat._id,
-        { ticket: generarTicket(newChat._id) },
-        { new: true },
       );
     }
 
