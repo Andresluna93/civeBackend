@@ -115,6 +115,30 @@ export const getChats = async (req, res) => {
   }
 };
 
+export const getChatByWaId = async (req, res) => {
+  const { wa_id } = req.params;
+  try {
+    const foundChat = await chat.findOne({ wa_id, estado: "ingresado" });
+    if (!foundChat) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat no encontrado",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Chat obtenido exitosamente",
+      data: foundChat,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener el chat",
+      data: error,
+    });
+  }
+};
+
 export const updateStateChat = async (req, res) => {
   const { wa_id } = req.params;
   const { estado } = req.body;
