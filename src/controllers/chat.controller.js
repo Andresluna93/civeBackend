@@ -14,7 +14,7 @@ const esDentroHorario = () => {
       timeZone: "America/Guayaquil",
     }).format(new Date()),
   );
-  return hora >= 7 && hora < 17;
+  return hora >= 1 && hora < 17;
 };
 
 export const createChat = async (req, res) => {
