@@ -29,6 +29,7 @@ export const createChat = async (req, res) => {
     sucursal,
     status,
     estado,
+    canal,
   } = req.body;
   try {
     const mensaje = { texto, tipo, enviadoPor, fecha: new Date() };
@@ -48,6 +49,7 @@ export const createChat = async (req, res) => {
             fecha_fin,
             sucursal,
             status,
+            canal,
           },
           $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
         },
@@ -69,6 +71,7 @@ export const createChat = async (req, res) => {
             sucursal,
             estado: "abandono",
             fecha_fin: new Date(),
+            canal,
           },
           $inc: { noLeidos: enviadoPor === "cliente" ? 1 : 0 },
         },

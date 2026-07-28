@@ -29,6 +29,12 @@ const chatSchema = new mongoose.Schema(
       enum: ["ingresado", "en_proceso", "finalizada", "abandono"],
       default: "en_proceso",
     },
+    canal: {
+      type: String,
+      enum: ["whatsapp", "contact"],
+      default: "whatsapp",
+    },
+    cedula: { type: String, default: null },
     sucursal: { type: String, default: null },
     fecha_fin: { type: Date, default: null },
     horario_laboral: { type: Boolean, default: false },
