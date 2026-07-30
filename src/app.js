@@ -5,6 +5,7 @@ import sessionRoutes from "./routes/session.route.js";
 import chatRoutes from "./routes/chat.route.js";
 import dashboardRoutes from "./routes/dashboard.route.js";
 import contactRoutes from "./routes/contact.route.js";
+import userRoutes from "./routes/user.route.js";
 
 const app = express();
 
@@ -26,5 +27,6 @@ app.use("/api/sessions", sessionRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/contacts", contactRoutes);
+app.use("/api/authUser", userRoutes);
 
 export default app;
