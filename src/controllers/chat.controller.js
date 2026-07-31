@@ -478,3 +478,39 @@ export const updateStatusChat = async (req, res) => {
     });
   }
 };
+
+export const obtenerChats = async (_req, res, next) => {
+  try {
+    const chats = await chat.find({}, { mensajes: 0 })
+      .sort({ "ultimoMensaje.fecha": -1 })
+      .lean();
+
+    res.status(200).json({ success: true, chats });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMessages = async (req, res) => {
+  const { wa_id } = req.params;
+  try {
+    const foundChat = await chat
+      .findOne({ wa_id }, { historial: 1, name: 1, estado: 1, wa_id: 1 })
+      .lean();
+
+    if (!foundChat)
+      return res
+        .status(404)
+        .json({ success: false, message: "Chat no encontrado" });
+
+    res.status(200).json({ success: true, data: foundChat });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error al obtener mensajes",
+        data: error,
+      });
+  }
+};
