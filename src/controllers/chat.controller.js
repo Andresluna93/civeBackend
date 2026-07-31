@@ -491,6 +491,19 @@ export const obtenerChats = async (_req, res, next) => {
   }
 };
 
+export const getChatHistorialByWaId = async (req, res) => {
+  const { wa_id } = req.params;
+  try {
+    const chats = await chat.find({ wa_id }).sort({ createdAt: 1 });
+    if (!chats.length) {
+      return res.status(404).json({ success: false, message: "No se encontraron conversaciones" });
+    }
+    res.status(200).json({ success: true, data: chats });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error al obtener el historial", data: error });
+  }
+};
+
 export const getMessages = async (req, res) => {
   const { wa_id } = req.params;
   try {

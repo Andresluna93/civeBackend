@@ -3,6 +3,7 @@ import {
   createChat,
   getChats,
   getChatByWaId,
+  getChatHistorialByWaId,
   getMessages,
   updateStateChat,
   sweepAbandonedChats,
@@ -10,7 +11,7 @@ import {
   updateChatHistorial,
   updateChat,
   updateStatusChat,
-  obtenerChats
+  obtenerChats,
 } from "../controllers/chat.controller.js";
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router.put("/updatehistorial", updateChatHistorial);
 router.put("/updatechat", updateChat);
 router.post("/updatestatus", updateStatusChat);
 router.get("/:wa_id/messages", getMessages);
-router.get("/listarmensajes", obtenerChats)
+router.get("/:wa_id/historial", getChatHistorialByWaId);
+router.get("/listarmensajes", obtenerChats);
 
 export default router;
