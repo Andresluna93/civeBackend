@@ -479,15 +479,23 @@ export const updateStatusChat = async (req, res) => {
   }
 };
 
-export const obtenerChats = async (_req, res, next) => {
+export const obtenerChats = async (_req, res) => {
   try {
-    const chats = await chat.find({}, { mensajes: 0 })
-      .sort({ "ultimoMensaje.fecha": -1 })
-      .lean();
+    const chats = await chat.aggregate([
+      { $sort: { createdAt: -1 } },
+      {
+        $group: {
+          _id: "$wa_id",
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      { $replaceRoot: { newRoot: "$doc" } },
+      { $sort: { createdAt: -1 } },
+    ]);
 
-    res.status(200).json({ success: true, chats });
+    res.status(200).json({ success: true, data: chats });
   } catch (error) {
-    next(error);
+    res.status(500).json({ success: false, message: "Error al obtener chats", data: error });
   }
 };
 
