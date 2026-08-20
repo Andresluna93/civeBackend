@@ -34,7 +34,7 @@ export const registerUser = async (req, res) => {
   }
 
   try {
-    const usuario = await User.create({ nameUser, password, name, role });
+    const usuario = await User.create({ nameUser, password, name, role: role || undefined });
     res
       .status(201)
       .json({ success: true, message: "Registro exitoso", data: usuario });
