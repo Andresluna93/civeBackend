@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const campanaSchema = new mongoose.Schema(
   {
     nombre: { type: String, required: true },
-    templateName: { type: String, required: true },
+    template: { type: mongoose.Schema.Types.ObjectId, ref: "Plantilla", required: true },
     estado: {
       type: String,
       enum: ["borrador", "enviando", "completada", "fallida"],
