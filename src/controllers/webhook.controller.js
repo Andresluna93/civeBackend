@@ -1,4 +1,4 @@
-import ContactoCampana from "../models/contactoCampana.model.js";
+import EstadoMensaje from "../models/estadoMensaje.model.js";
 
 export const verifyWebhook = (req, res) => {
     const mode = req.query["hub.mode"];
@@ -26,13 +26,20 @@ export const receiveWebhook = async (req, res) => {
 
             for (const status of statuses) {
                 try {
-                    const result = await ContactoCampana.updateMany(
+                    const registro = await EstadoMensaje.findOneAndUpdate(
                         { mensajeId: status.id },
-                        { estadoEnvio: status.status },
+                        {
+                            mensajeId: status.id,
+                            status: status.status,
+                            recipientId: status.recipient_id,
+                            conversationId: status.conversation?.id || null,
+                            categoria: status.conversation?.origin?.type || null,
+                            timestampMeta: new Date(Number(status.timestamp) * 1000),
+                        },
+                        { upsert: true, new: true, setDefaultsOnInsert: true },
                     );
-                    console.log(
-                        `status=${status.status} mensajeId=${status.id} matched=${result.matchedCount} modified=${result.modifiedCount}`,
-                    );
+
+                    console.log(`status=${registro.status} mensajeId=${registro.mensajeId}`);
                 } catch (error) {
                     console.error("Error actualizando estado de mensaje:", error.message);
                 }

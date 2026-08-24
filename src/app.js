@@ -10,7 +10,9 @@ import contactosRoutes from "./routes/contactos.route.js";
 import campanasRoutes from "./routes/campana.route.js";
 import webhookRoutes from "./routes/webhook.route.js";
 import plantillaRoutes from "./routes/plantilla.route.js";
+import estadoMensajeRoutes from "./routes/estadoMensaje.route.js";
 import cookieParser from "cookie-parser";
+import {errorHandler} from "./middlewares/errorHandler.Middleware.js"
 
 const app = express();
 
@@ -38,5 +40,8 @@ app.use("/api/contactos", contactosRoutes);
 app.use("/api/campanaMarketing", campanasRoutes);
 app.use("/api/webhook", webhookRoutes);
 app.use("/api/plantillas", plantillaRoutes);
+app.use("/api/estadosMensajes", estadoMensajeRoutes);
+
+app.use(errorHandler);
 
 export default app;

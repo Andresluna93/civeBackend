@@ -61,6 +61,7 @@ export const importContactosCampana = async (req, res) => {
         columns: true,
         skip_empty_lines: true,
         trim: true,
+        delimiter: [",", ";"],
       });
     } else if (Array.isArray(req.body.contactos)) {
       filas = req.body.contactos;

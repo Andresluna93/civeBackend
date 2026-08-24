@@ -2,7 +2,30 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export const getAllUsers = async (req, res) => {};
+export const getAllUsers = async (req, res) => {
+  try {
+    const usuarios = await User.find();
+
+    if (!usuarios || usuarios.length === 0) {
+      const error = new Error("No se encontraron usuarios");
+      error.status = 404;
+      throw error;
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Usuarios entregados", usuarios });
+  } catch (error) {
+    next(error);
+    /*res
+      .status(500)
+      .json({
+        success: false,
+        message: "Listado de Usuarios no entregados",
+        data: error.message,
+      });*/
+  }
+};
 
 export const loginUser = async (req, res) => {
   const { nameUser, password } = req.body;
@@ -30,7 +53,7 @@ export const loginUser = async (req, res) => {
       { name: usuario.name, role: usuario.role },
       jwtsecret,
       {
-        expiresIn: "1h",
+        expiresIn: "8h",
       },
     );
 
