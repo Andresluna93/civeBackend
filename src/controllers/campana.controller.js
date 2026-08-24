@@ -162,11 +162,15 @@ export const sendTemplateArchivo = async (req, res) => {
 
     let filas;
     try {
+      const crudo = req.file.buffer.toString("utf8");
+      console.log(`[sendTemplateArchivo] primeras líneas del archivo:\n${crudo.split(/\r?\n/).slice(0, 5).join("\n")}`);
+
       filas = parse(req.file.buffer, {
         columns: true,
         skip_empty_lines: true,
         trim: true,
         delimiter: [",", ";"],
+        relax_column_count: true,
       });
       console.log(`[sendTemplateArchivo] filas parseadas: ${filas.length}`);
     } catch (error) {
