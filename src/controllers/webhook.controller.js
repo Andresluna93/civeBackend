@@ -22,23 +22,6 @@ export const receiveWebhook = async (req, res) => {
 
   console.log("Webhook payload:", JSON.stringify(req.body, null, 2));
 
-  /*try {
-    const respuesta = await axios.post(
-      "https://rluna1993.app.n8n.cloud/webhook/32d920ef-0c48-4ba4-b279-4fdeb7503c5c",
-      req.body,
-      {
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-    console.log(`n8n respondió status=${respuesta.status}`, respuesta.data);
-  } catch (error) {
-    console.error(
-      "Error reenviando a n8n:",
-      error.response?.status,
-      error.response?.data || error.message,
-    );
-  }*/
-
   const entries = req.body?.entry || [];
   const enviados = new Set();
 
@@ -84,29 +67,33 @@ export const receiveWebhook = async (req, res) => {
           }
         }
       }
-    }
-  }
-  /*for (const status of statuses) {
-                try {
-                    const registro = await EstadoMensaje.findOneAndUpdate(
-                        { mensajeId: status.id },
-                        {
-                            mensajeId: status.id,
-                            status: status.status,
-                            recipientId: status.recipient_id,
-                            conversationId: status.conversation?.id || null,
-                            categoria: status.conversation?.origin?.type || null,
-                            timestampMeta: new Date(Number(status.timestamp) * 1000),
-                        },
-                        { upsert: true, new: true, setDefaultsOnInsert: true },
-                    );
 
-                    console.log(`status=${registro.status} mensajeId=${registro.mensajeId}`);
-                } catch (error) {
-                    console.error("Error actualizando estado de mensaje:", error.message);
-                }
-            }
+      if (value.statuses) {
+        for (const status of value.statuses || []) {
+          try {
+            const registro = await EstadoMensaje.findOneAndUpdate(
+              { mensajeId: status.id },
+              {
+                mensajeId: status.id,
+                status: status.status,
+                recipientId: status.recipient_id,
+                conversationId: status.conversation?.id || null,
+                categoria: status.conversation?.origin?.type || null,
+                timestampMeta: new Date(Number(status.timestamp) * 1000),
+              },
+              { upsert: true, new: true, setDefaultsOnInsert: true },
+            );
+
+            console.log(`status=${registro.status} mensajeId=${registro.mensajeId}`);
+          } catch (error) {
+            console.error(
+              "Error guardando/enviando status:",
+              error.response?.status,
+              error.response?.data || error.message,
+            );
+          }
+        }
+      }
     }
   }
-  */
 };
