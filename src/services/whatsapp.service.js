@@ -37,6 +37,10 @@ export const enviarTemplateWhatsapp = async ({
       },
     },
     {
+      params: {
+        campanaId: "1544566166895593",
+        origenCampana: "sin_diagnostico_boton",
+      },
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
@@ -59,7 +63,9 @@ export const obtenerListadoTemplates = async () => {
       },
     });
 
-    console.log(`página con ${data.data.length} templates, next=${data.paging?.next}`);
+    console.log(
+      `página con ${data.data.length} templates, next=${data.paging?.next}`,
+    );
     templates.push(...data.data);
     url = data.paging?.next || null;
   }
