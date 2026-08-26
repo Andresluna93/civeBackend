@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const chatTemplateSchema = new mongoose.Schema(
   {
     wa_id: { type: String, required: true, index: true },
-    name: { type: String, required: true, index: true },
+    clientName: { type: String, required: true, index: true },
     client_text: { type: String, required: true },
     ia_text: { type: String, required: true },
     tipo: {

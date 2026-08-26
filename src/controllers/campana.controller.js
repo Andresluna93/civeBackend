@@ -272,15 +272,22 @@ export const sendTemplateArchivo = async (req, res) => {
 };
 
 export const guardarChatTemplate = async (req, res) => {
-  const { wa_id, client_text, ia_text } = req.body;
+  const { wa_id, client_text, ia_text, clientName } = req.body;
   if (!wa_id || !client_text || !ia_text) {
     return res.status(400).json({ success: false, mensaje: "campos vacios" });
   }
   try {
-    const chat = await ChatTemplate.create({ wa_id, client_text, ia_text });
-    res
-      .status(200)
-      .json({ success: true, mensaje: "registro chatTemplate exitoso", data: chat });
+    const chat = await ChatTemplate.create({
+      wa_id,
+      client_text,
+      ia_text,
+      clientName,
+    });
+    res.status(200).json({
+      success: true,
+      mensaje: "registro chatTemplate exitoso",
+      data: chat,
+    });
   } catch (error) {
     res.status(500).json({ success: false, mensaje: error.message });
   }
