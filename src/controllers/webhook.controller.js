@@ -84,7 +84,9 @@ export const receiveWebhook = async (req, res) => {
               { upsert: true, new: true, setDefaultsOnInsert: true },
             );
 
-            console.log(`status=${registro.status} mensajeId=${registro.mensajeId}`);
+            console.log(
+              `status=${registro.status} mensajeId=${registro.mensajeId}`,
+            );
           } catch (error) {
             console.error(
               "Error guardando/enviando status:",

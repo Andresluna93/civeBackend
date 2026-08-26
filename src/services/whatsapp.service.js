@@ -37,10 +37,6 @@ export const enviarTemplateWhatsapp = async ({
       },
     },
     {
-      params: {
-        campanaId: "1544566166895593",
-        origenCampana: "sin_diagnostico_boton",
-      },
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,

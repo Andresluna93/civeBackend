@@ -5,6 +5,7 @@ import {
   sendManyTemplates,
   sendTemplateArchivo,
   getAllTemplates,
+  guardarChatTemplate,
 } from "../controllers/campana.controller.js";
 
 const router = express.Router();
@@ -12,6 +13,11 @@ const router = express.Router();
 router.get("/getTemplates", getAllTemplates);
 router.post("/sendTemplate", sendTemplate);
 router.post("/sendManyTemplates", sendManyTemplates);
-router.post("/sendTemplateArchivo", uploadCsv.single("file"), sendTemplateArchivo);
+router.post(
+  "/sendTemplateArchivo",
+  uploadCsv.single("file"),
+  sendTemplateArchivo,
+);
+router.post("/guardarChatCampana", guardarChatTemplate);
 
 export default router;

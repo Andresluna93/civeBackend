@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
 
 const chatTemplateSchema = new mongoose.Schema({
-    texto: { type: String, required: true },
+    wa_id: { type: String, required: true, index: true },
+    client_text: { type: String, required: true },
+    ia_text: {type: String, required: true},
     tipo: {
       type: String,
       enum: ["text", "image", "audio", "document", "sticker"],
       default: "text",
     },
-    enviadoPor: { type: String, enum: ["cliente", "agente"], required: true },
+    status:{type: String, default:"interactuaron"},
     fecha: { type: Date, default: Date.now },
 },{
     timestamps: true,

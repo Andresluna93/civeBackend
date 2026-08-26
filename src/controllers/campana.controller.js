@@ -7,6 +7,7 @@ import Campana from "../models/campana.model.js";
 import ContactoCampana from "../models/contactoCampana.model.js";
 import Plantilla from "../models/plantilla.model.js";
 import EstadoMensaje from "../models/estadoMensaje.model.js";
+import ChatTemplate from "../models/chatTemplate.model.js";
 
 export const getAllTemplates = async (req, res) => {
   try {
@@ -134,7 +135,9 @@ export const sendManyTemplates = async (req, res) => {
 
 export const sendTemplateArchivo = async (req, res) => {
   const { templateName } = req.body;
-  console.log(`[sendTemplateArchivo] templateName='${templateName}' archivo='${req.file?.originalname}' size=${req.file?.size}`);
+  console.log(
+    `[sendTemplateArchivo] templateName='${templateName}' archivo='${req.file?.originalname}' size=${req.file?.size}`,
+  );
 
   if (!templateName) {
     return res.status(400).json({ message: "templateName es requerido" });
@@ -146,7 +149,16 @@ export const sendTemplateArchivo = async (req, res) => {
 
   try {
     const plantilla = await Plantilla.findOne({ name: templateName });
-    console.log(`[sendTemplateArchivo] plantilla encontrada:`, plantilla ? { name: plantilla.name, language: plantilla.language, status: plantilla.status } : null);
+    console.log(
+      `[sendTemplateArchivo] plantilla encontrada:`,
+      plantilla
+        ? {
+            name: plantilla.name,
+            language: plantilla.language,
+            status: plantilla.status,
+          }
+        : null,
+    );
 
     if (!plantilla) {
       return res.status(404).json({
@@ -163,7 +175,9 @@ export const sendTemplateArchivo = async (req, res) => {
     let filas;
     try {
       const crudo = req.file.buffer.toString("utf8");
-      console.log(`[sendTemplateArchivo] primeras líneas del archivo:\n${crudo.split(/\r?\n/).slice(0, 5).join("\n")}`);
+      console.log(
+        `[sendTemplateArchivo] primeras líneas del archivo:\n${crudo.split(/\r?\n/).slice(0, 5).join("\n")}`,
+      );
 
       filas = parse(req.file.buffer, {
         columns: true,
@@ -174,8 +188,13 @@ export const sendTemplateArchivo = async (req, res) => {
       });
       console.log(`[sendTemplateArchivo] filas parseadas: ${filas.length}`);
     } catch (error) {
-      console.error(`[sendTemplateArchivo] error parseando CSV:`, error.message);
-      return res.status(400).json({ message: `Error al leer el archivo: ${error.message}` });
+      console.error(
+        `[sendTemplateArchivo] error parseando CSV:`,
+        error.message,
+      );
+      return res
+        .status(400)
+        .json({ message: `Error al leer el archivo: ${error.message}` });
     }
 
     const resultado = { total: filas.length, exitosos: 0, fallidos: [] };
@@ -184,8 +203,14 @@ export const sendTemplateArchivo = async (req, res) => {
       const { telefono, ...variables } = fila;
 
       if (!telefono) {
-        console.warn(`[sendTemplateArchivo] fila ${index + 1} sin telefono, se omite`, fila);
-        resultado.fallidos.push({ error: "telefono es requerido", datos: fila });
+        console.warn(
+          `[sendTemplateArchivo] fila ${index + 1} sin telefono, se omite`,
+          fila,
+        );
+        resultado.fallidos.push({
+          error: "telefono es requerido",
+          datos: fila,
+        });
         continue;
       }
 
@@ -196,7 +221,9 @@ export const sendTemplateArchivo = async (req, res) => {
           text: String(valor),
         }));
 
-        console.log(`[sendTemplateArchivo] fila ${index + 1} -> enviando a ${telefono} con params=${JSON.stringify(variables)}`);
+        console.log(
+          `[sendTemplateArchivo] fila ${index + 1} -> enviando a ${telefono} con params=${JSON.stringify(variables)}`,
+        );
 
         const data = await enviarTemplateWhatsapp({
           to: telefono,
@@ -208,7 +235,9 @@ export const sendTemplateArchivo = async (req, res) => {
         });
 
         const mensajeId = data.messages?.[0]?.id;
-        console.log(`[sendTemplateArchivo] fila ${index + 1} -> OK, mensajeId=${mensajeId}`);
+        console.log(
+          `[sendTemplateArchivo] fila ${index + 1} -> OK, mensajeId=${mensajeId}`,
+        );
 
         await EstadoMensaje.create({
           mensajeId,
@@ -220,7 +249,10 @@ export const sendTemplateArchivo = async (req, res) => {
 
         resultado.exitosos += 1;
       } catch (error) {
-        console.error(`[sendTemplateArchivo] fila ${index + 1} -> FALLO ${telefono}:`, error.response?.data || error.message);
+        console.error(
+          `[sendTemplateArchivo] fila ${index + 1} -> FALLO ${telefono}:`,
+          error.response?.data || error.message,
+        );
         resultado.fallidos.push({
           telefono,
           error: error.response?.data || error.message,
@@ -228,11 +260,28 @@ export const sendTemplateArchivo = async (req, res) => {
       }
     }
 
-    console.log(`[sendTemplateArchivo] resultado final: total=${resultado.total} exitosos=${resultado.exitosos} fallidos=${resultado.fallidos.length}`);
+    console.log(
+      `[sendTemplateArchivo] resultado final: total=${resultado.total} exitosos=${resultado.exitosos} fallidos=${resultado.fallidos.length}`,
+    );
 
     res.status(207).json(resultado);
   } catch (error) {
     console.error(`[sendTemplateArchivo] error inesperado:`, error.message);
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const guardarChatTemplate = async (req, res) => {
+  const { wa_id, client_text, ia_text } = req.body;
+  if (!wa_id || !client_text || !ia_text) {
+    return res.status(400).json({ success: false, mensaje: "campos vacios" });
+  }
+  try {
+    const chat = await ChatTemplate.create({ wa_id, client_text, ia_text });
+    res
+      .status(200)
+      .json({ success: true, mensaje: "registro chatTemplate exitoso", data: chat });
+  } catch (error) {
+    res.status(500).json({ success: false, mensaje: error.message });
   }
 };
